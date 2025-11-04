@@ -1,7 +1,7 @@
 
 ![Screenshot of the game.](images/puzzle-game.png)
 
-# Puzzle Game
+# 3x3 Puzzle Game
 
 This game is inspired by the Rubik's cube.
 
