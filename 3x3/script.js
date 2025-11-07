@@ -52,27 +52,34 @@ let prevColors;
 
 
 // Keys
-let upKey = false;
-let downKey = false;
-let leftKey = false;
-let rightKey = false;
-let centerKey = false;
-
-const moves = {
-  upLeft: false,
-  upRight: false,
-  downLeft: false,
-  downRight: false,
-
-  leftUp: false,
-  leftDown: false,
-  rightUp: false,
-  rightDown: false,
-
-  centerUp: false,
-  centerDown: false,
-  centerLeft: false,
-  centerRight: false
+const keyPress = {
+  up: {
+    press: false, 
+    left: false, 
+    right: false
+  },
+  down: {
+    press: false, 
+    left: false, 
+    right: false
+  },
+  left: {
+    press: false, 
+    up: false, 
+    down: false
+  },
+  right: {
+    press: false, 
+    up: false, 
+    down: false
+  },
+  center: {
+    press: false,
+    up: false, 
+    down: false,
+    left: false, 
+    right: false
+  }
 };
 
 /** keys[x][y] */
@@ -294,54 +301,54 @@ function changeColorScheme() {
 /** Take in the keyboard input to move the colors of the cube objects. One keypress moves the colors of one row or column one step */
 function moveColors() {
   // Up
-  if (moves.upLeft) {
+  if (keyPress.up.left) {
     move(2, 0, 1, 0, 0, 0);
-    moves.upLeft = false;
-  } else if (moves.upRight) {
+    keyPress.up.left = false;
+  } else if (keyPress.up.right) {
     move(0, 0, 1, 0, 2, 0);
-    moves.upRight = false;
+    keyPress.up.right = false;
   }
   
   // Down
-  if (moves.downLeft) {
+  if (keyPress.down.left) {
     move(2, 2, 1, 2, 0, 2);
-    moves.downLeft = false;
-  } else if (moves.downRight) {
+    keyPress.down.left = false;
+  } else if (keyPress.down.right) {
     move(0, 2, 1, 2, 2, 2);
-    moves.downRight = false;
+    keyPress.down.right = false;
   }
 
   // Left
-  if (moves.leftUp) {
+  if (keyPress.left.up) {
     move(0, 2, 0, 1, 0, 0);
-    moves.leftUp = false;
-  } else if (moves.leftDown) {
+    keyPress.left.up = false;
+  } else if (keyPress.left.down) {
     move(0, 0, 0, 1, 0, 2);
-    moves.leftDown = false;
+    keyPress.left.down = false;
   }
 
   // Right
-  if (moves.rightUp) {
+  if (keyPress.right.up) {
     move(2, 2, 2, 1, 2, 0);
-    moves.rightUp = false;
-  } else if (moves.rightDown) {
+    keyPress.right.up = false;
+  } else if (keyPress.right.down) {
     move(2, 0, 2, 1, 2, 2);
-    moves.rightDown = false;
+    keyPress.right.down = false;
   }
 
   // Center
-  if (moves.centerUp) {
+  if (keyPress.center.up) {
     move(1, 2, 1, 1, 1, 0);
-    moves.centerUp = false;
-  } else if (moves.centerDown) {
+    keyPress.center.up = false;
+  } else if (keyPress.center.down) {
     move(1, 0, 1, 1, 1, 2);
-    moves.centerDown = false;
-  } else if (moves.centerLeft) {
+    keyPress.center.down = false;
+  } else if (keyPress.center.left) {
     move(2, 1, 1, 1, 0, 1);
-    moves.centerLeft = false;
-  } else if (moves.centerRight) {
+    keyPress.center.left = false;
+  } else if (keyPress.center.right) {
     move(0, 1, 1, 1, 2, 1);
-    moves.centerRight = false;
+    keyPress.center.right = false;
   }
 }
 
@@ -574,69 +581,39 @@ function drawIndicatorSolved() {
 }
 
 function keyPressed(event) {
-  // Up
-  if (event.code === keys[1][0]) {
-    upKey = true;
-  }
-  if (upKey === true) {
-    if (event.code === keys[0][0]) { // Up - Left
-      moves.upLeft = true;
-    } else if (event.code === keys[2][0]) { // Up - Right
-      moves.upRight = true;
+  function getKeyPress(key, x, y) {
+    if (event.code === keys[x][y]) {
+      key.press = true;
+    }
+
+    if (key.press) {
+      for (const keyP in key) {
+        if (keyP === "up") {
+          if (event.code === keys[x][y-1]) {
+            key[keyP] = true;
+          }
+        } else if (keyP === "down") {
+          if (event.code === keys[x][y+1]) {
+            key[keyP] = true;
+          }
+        } else if (keyP === "left") {
+          if (event.code === keys[x-1][y]) {
+            key[keyP] = true;
+          }
+        } else if (keyP === "right") {
+          if (event.code === keys[x+1][y]) {
+            key[keyP] = true;
+          }
+        }
+      }
     }
   }
 
-  // Down
-  if (event.code === keys[1][2]) {
-    downKey = true;
-  }
-  if (downKey === true) {
-    if (event.code === keys[0][2]) { // Down - Left
-      moves.downLeft = true;
-    } else if (event.code === keys[2][2]) { // Down - Right
-      moves.downRight = true;
-    }
-  }
-
-  // Left
-  if (event.code === keys[0][1]) {
-    leftKey = true;
-  }
-  if (leftKey === true) {
-    if (event.code === keys[0][0]) { // Left - Up
-      moves.leftUp = true;
-    } else if (event.code === keys[0][2]) { // Left - Down
-      moves.leftDown = true;
-    }
-  }
-
-  // Right
-  if (event.code === keys[2][1]) {
-    rightKey = true;
-  }
-  if (rightKey === true) {
-    if (event.code === keys[2][0]) { // Right - Up
-      moves.rightUp = true;
-    } else if (event.code === keys[2][2]) { // Right - Down
-      moves.rightDown = true;
-    }
-  }
-
-  // Center
-  if (event.code === keys[1][1]) {
-    centerKey = true;
-  }
-  if (centerKey === true) {
-    if (event.code === keys[1][0]) { // Center - Up
-      moves.centerUp = true;
-    } else if (event.code === keys[1][2]) { // Center - Down
-      moves.centerDown = true;
-    } else if (event.code === keys[0][1]) { // Center - Left
-      moves.centerLeft = true;
-    } else if (event.code === keys[2][1]) { // Center - Right
-      moves.centerRight = true;
-    }
-  }
+  getKeyPress(keyPress.up, 1, 0);
+  getKeyPress(keyPress.down, 1, 2);
+  getKeyPress(keyPress.left, 0, 1);
+  getKeyPress(keyPress.right, 2, 1);
+  getKeyPress(keyPress.center, 1, 1);
 
   // Reset
   if (event.code === resetKey) {
@@ -677,26 +654,18 @@ function keyPressed(event) {
 }
 
 function keyReleased(event) {
-  // Up
-  if (event.code === keys[1][0]) {
-    upKey = false;
+  function getKeyRelease(key, x, y) {
+    if (event.code === keys[x][y]) {
+      key.press = false;
+    }
   }
-  // Down
-  if (event.code === keys[1][2]) {
-    downKey = false;
-  }
-  // Left
-  if (event.code === keys[0][1]) {
-    leftKey = false;
-  }
-  // Right
-  if (event.code === keys[2][1]) {
-    rightKey = false;
-  }
-  // Center
-  if (event.code === keys[1][1]) {
-    centerKey = false;
-  }
+
+  getKeyRelease(keyPress.up, 1, 0);
+  getKeyRelease(keyPress.down, 1, 2);
+  getKeyRelease(keyPress.left, 0, 1);
+  getKeyRelease(keyPress.right, 2, 1);
+  getKeyRelease(keyPress.center, 1, 1);
+
   // Rows
   for (let i = 0; i < keyRowsAmount; i++) {
     const row = `r${i + 1}`;
